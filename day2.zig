@@ -18,7 +18,7 @@ fn part1(lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !i32 {
         const line = (try readLine(lineBuffer, reader)) orelse break;
         const spaceIndex = std.mem.indexOfScalar(u8, line, ' ').?;
         const command = line[0..spaceIndex];
-        const increment = try std.fmt.parseInt(i32, line[spaceIndex + 1..], 10);
+        const increment = try std.fmt.parseInt(i32, line[spaceIndex + 1 ..], 10);
         if (std.mem.eql(u8, command, "forward")) {
             x += increment;
         } else if (std.mem.eql(u8, command, "up")) {
@@ -38,7 +38,7 @@ fn part2(lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !i32 {
         const line = (try readLine(lineBuffer, reader)) orelse break;
         const spaceIndex = std.mem.indexOfScalar(u8, line, ' ').?;
         const command = line[0..spaceIndex];
-        const increment = try std.fmt.parseInt(i32, line[spaceIndex + 1..], 10);
+        const increment = try std.fmt.parseInt(i32, line[spaceIndex + 1 ..], 10);
         if (std.mem.eql(u8, command, "forward")) {
             x += increment;
             y += aim * increment;

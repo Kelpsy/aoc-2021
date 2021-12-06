@@ -2,13 +2,12 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const ArrayList = std.ArrayList;
 
-fn readLine(lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !?[]u8 {
-    try lineBuffer.resize(0);
-    reader.readUntilDelimiterArrayList(lineBuffer, '\n', std.math.inf_u64) catch |e| switch (e) {
+fn readLine(line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !?[]u8 {
+    reader.readUntilDelimiterArrayList(line_buffer, '\n', std.math.inf_u64) catch |e| switch (e) {
         error.EndOfStream => return null,
         else => return e,
     };
-    return lineBuffer.items;
+    return line_buffer.items;
 }
 
 const BoardNumber = struct {
@@ -43,8 +42,8 @@ fn checkBoard(board: *const Board) bool {
     } else false;
 }
 
-fn parse(numbers: *ArrayList(u8), boards: *ArrayList(Board), lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !void {
-    const numbers_line = (try readLine(lineBuffer, reader)) orelse unreachable;
+fn parse(numbers: *ArrayList(u8), boards: *ArrayList(Board), line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !void {
+    const numbers_line = (try readLine(line_buffer, reader)) orelse unreachable;
     {
         var iter = std.mem.split(numbers_line, ",");
         while (true) {
@@ -53,13 +52,13 @@ fn parse(numbers: *ArrayList(u8), boards: *ArrayList(Board), lineBuffer: *ArrayL
     }
 
     outer: while (true) {
-        _ = try readLine(lineBuffer, reader);
+        _ = try readLine(line_buffer, reader);
         var board = Board{ .numbers = std.mem.zeroes([5][5]BoardNumber) };
         var i: usize = 0;
         while (i < 5) : ({
             i += 1;
         }) {
-            const line = (try readLine(lineBuffer, reader)) orelse break :outer;
+            const line = (try readLine(line_buffer, reader)) orelse break :outer;
             var iter = std.mem.split(line, " ");
             var j: usize = 0;
             while (j < 5) {
@@ -75,10 +74,10 @@ fn parse(numbers: *ArrayList(u8), boards: *ArrayList(Board), lineBuffer: *ArrayL
     }
 }
 
-fn part1(allocator: *Allocator, lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
+fn part1(allocator: *Allocator, line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
     var numbers = ArrayList(u8).init(allocator);
     var boards = ArrayList(Board).init(allocator);
-    try parse(&numbers, &boards, lineBuffer, reader);
+    try parse(&numbers, &boards, line_buffer, reader);
 
     for (numbers.items) |number| {
         for (boards.items) |*board| {
@@ -107,11 +106,11 @@ fn part1(allocator: *Allocator, lineBuffer: *ArrayList(u8), reader: std.fs.File.
     unreachable;
 }
 
-fn part2(allocator: *Allocator, lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
+fn part2(allocator: *Allocator, line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
     var numbers = ArrayList(u8).init(allocator);
     var boards = ArrayList(Board).init(allocator);
     var last_product: ?u32 = null;
-    try parse(&numbers, &boards, lineBuffer, reader);
+    try parse(&numbers, &boards, line_buffer, reader);
 
     for (numbers.items) |number| {
         var i: usize = 0;
@@ -151,12 +150,12 @@ pub fn main() !void {
     _ = args.skip();
     const part = try std.fmt.parseUnsigned(u8, try args.next(allocator).?, 10);
     const path = try args.next(allocator).?;
-    const inputFile = try std.fs.cwd().openFile(path, .{ .read = true });
-    defer inputFile.close();
-    var lineBuffer = ArrayList(u8).init(allocator);
+    const input_file = try std.fs.cwd().openFile(path, .{ .read = true });
+    defer input_file.close();
+    var line_buffer = ArrayList(u8).init(allocator);
     const product = switch (part) {
-        1 => try part1(allocator, &lineBuffer, inputFile.reader()),
-        2 => try part2(allocator, &lineBuffer, inputFile.reader()),
+        1 => try part1(allocator, &line_buffer, input_file.reader()),
+        2 => try part2(allocator, &line_buffer, input_file.reader()),
         else => unreachable,
     };
     std.debug.print("Product: {}", .{product});

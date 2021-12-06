@@ -2,13 +2,12 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const ArrayList = std.ArrayList;
 
-fn readLine(lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !?[]u8 {
-    try lineBuffer.resize(0);
-    reader.readUntilDelimiterArrayList(lineBuffer, '\n', std.math.inf_u64) catch |e| switch (e) {
+fn readLine(line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !?[]u8 {
+    reader.readUntilDelimiterArrayList(line_buffer, '\n', std.math.inf_u64) catch |e| switch (e) {
         error.EndOfStream => return null,
         else => return e,
     };
-    return lineBuffer.items;
+    return line_buffer.items;
 }
 
 const Line = struct {
@@ -16,9 +15,9 @@ const Line = struct {
     end: [2]u16,
 };
 
-fn parse(lines: *ArrayList(Line), lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !void {
+fn parse(lines: *ArrayList(Line), line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !void {
     while (true) {
-        const line = (try readLine(lineBuffer, reader)) orelse break;
+        const line = (try readLine(line_buffer, reader)) orelse break;
         var iter = std.mem.split(line, " -> ");
         var start_iter = std.mem.split(iter.next().?, ",");
         var end_iter = std.mem.split(iter.next().?, ",");
@@ -30,9 +29,9 @@ fn parse(lines: *ArrayList(Line), lineBuffer: *ArrayList(u8), reader: std.fs.Fil
     }
 }
 
-fn part1(allocator: *Allocator, lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
+fn part1(allocator: *Allocator, line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
     var lines = ArrayList(Line).init(allocator);
-    try parse(&lines, lineBuffer, reader);
+    try parse(&lines, line_buffer, reader);
 
     {
         var i: usize = 0;
@@ -91,9 +90,9 @@ fn part1(allocator: *Allocator, lineBuffer: *ArrayList(u8), reader: std.fs.File.
     return intersections;
 }
 
-fn part2(allocator: *Allocator, lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
+fn part2(allocator: *Allocator, line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
     var lines = ArrayList(Line).init(allocator);
-    try parse(&lines, lineBuffer, reader);
+    try parse(&lines, line_buffer, reader);
 
     var max = [2]u16{ 0, 0 };
     for (lines.items) |line| {
@@ -164,12 +163,12 @@ pub fn main() !void {
     _ = args.skip();
     const part = try std.fmt.parseUnsigned(u8, try args.next(allocator).?, 10);
     const path = try args.next(allocator).?;
-    const inputFile = try std.fs.cwd().openFile(path, .{ .read = true });
-    defer inputFile.close();
-    var lineBuffer = ArrayList(u8).init(allocator);
+    const input_file = try std.fs.cwd().openFile(path, .{ .read = true });
+    defer input_file.close();
+    var line_buffer = ArrayList(u8).init(allocator);
     const intersections = switch (part) {
-        1 => try part1(allocator, &lineBuffer, inputFile.reader()),
-        2 => try part2(allocator, &lineBuffer, inputFile.reader()),
+        1 => try part1(allocator, &line_buffer, input_file.reader()),
+        2 => try part2(allocator, &line_buffer, input_file.reader()),
         else => unreachable,
     };
     std.debug.print("Intersections: {}", .{intersections});

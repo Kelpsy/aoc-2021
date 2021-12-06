@@ -2,20 +2,19 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const ArrayList = std.ArrayList;
 
-fn readLine(lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !?[]u8 {
-    try lineBuffer.resize(0);
-    reader.readUntilDelimiterArrayList(lineBuffer, '\n', std.math.inf_u64) catch |e| switch (e) {
+fn readLine(line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !?[]u8 {
+    reader.readUntilDelimiterArrayList(line_buffer, '\n', std.math.inf_u64) catch |e| switch (e) {
         error.EndOfStream => return null,
         else => return e,
     };
-    return lineBuffer.items;
+    return line_buffer.items;
 }
 
-fn part1(allocator: *Allocator, lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
+fn part1(allocator: *Allocator, line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
     var occurrences = ArrayList(u32).init(allocator);
     var len: u32 = 0;
     while (true) {
-        const line = (try readLine(lineBuffer, reader)) orelse break;
+        const line = (try readLine(line_buffer, reader)) orelse break;
         if (occurrences.items.len < line.len) {
             try occurrences.appendNTimes(0, line.len - occurrences.items.len);
         }
@@ -55,12 +54,12 @@ fn filter(list: *ArrayList(u32), bit_index: u5, most_common: comptime bool) void
     }
 }
 
-fn part2(allocator: *Allocator, lineBuffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
+fn part2(allocator: *Allocator, line_buffer: *ArrayList(u8), reader: std.fs.File.Reader) !u32 {
     var oxygen = ArrayList(u32).init(allocator);
     var co2 = ArrayList(u32).init(allocator);
     var bits: usize = 0;
     while (true) {
-        const line = (try readLine(lineBuffer, reader)) orelse break;
+        const line = (try readLine(line_buffer, reader)) orelse break;
         if (line.len > bits) {
             bits = line.len;
         }
@@ -87,12 +86,12 @@ pub fn main() !void {
     _ = args.skip();
     const part = try std.fmt.parseUnsigned(u8, try args.next(allocator).?, 10);
     const path = try args.next(allocator).?;
-    const inputFile = try std.fs.cwd().openFile(path, .{ .read = true });
-    defer inputFile.close();
-    var lineBuffer = ArrayList(u8).init(allocator);
+    const input_file = try std.fs.cwd().openFile(path, .{ .read = true });
+    defer input_file.close();
+    var line_buffer = ArrayList(u8).init(allocator);
     const product = switch (part) {
-        1 => try part1(allocator, &lineBuffer, inputFile.reader()),
-        2 => try part2(allocator, &lineBuffer, inputFile.reader()),
+        1 => try part1(allocator, &line_buffer, input_file.reader()),
+        2 => try part2(allocator, &line_buffer, input_file.reader()),
         else => unreachable,
     };
     std.debug.print("Product: {}", .{product});

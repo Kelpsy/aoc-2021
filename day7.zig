@@ -19,7 +19,7 @@ fn parseInput(allocator: *Allocator, reader: std.fs.File.Reader) !ArrayList(u16)
     return result;
 }
 
-fn part1(crabs: []const u16, allocator: *Allocator) !u64 {
+fn part1(crabs: []const u16) !u64 {
     var min_x: u16 = std.math.inf_u16;
     var max_x: u16 = 0;
     for (crabs) |crab_pos| {
@@ -48,7 +48,7 @@ fn part1(crabs: []const u16, allocator: *Allocator) !u64 {
     return min_fuel;
 }
 
-fn part2(crabs: []const u16, allocator: *Allocator) !u64 {
+fn part2(crabs: []const u16) !u64 {
     var min_x: u16 = std.math.inf_u16;
     var max_x: u16 = 0;
     for (crabs) |crab_pos| {
@@ -91,8 +91,8 @@ pub fn main() !void {
     defer input_file.close();
     const crabs = try parseInput(allocator, input_file.reader());
     const result = switch (part) {
-        1 => try part1(crabs.items, allocator),
-        2 => try part2(crabs.items, allocator),
+        1 => try part1(crabs.items),
+        2 => try part2(crabs.items),
         else => unreachable,
     };
     std.debug.print("Result: {}\n", .{result});

@@ -43,9 +43,11 @@ fn part1(entries: []const Entry) !u32 {
     var result: u32 = 0;
     for (entries) |entry| {
         for (entry.value) |digit| {
-            const lines = @popCount(u7, digit);
-            if (lines == 2 or lines == 3 or lines == 4 or lines == 7) {
-                result += 1;
+            switch (@popCount(u7, digit)) {
+                2, 3, 4, 7 => {
+                    result += 1;
+                },
+                else => {},
             }
         }
     }
@@ -109,7 +111,6 @@ fn part2(entries: []const Entry) !u32 {
             0x6F,
         };
 
-        var result: u32 = 0;
         var multiplier: u32 = 1000;
         for (entry.value) |value_digit| {
             var orig_lines: u7 = 0;
@@ -118,14 +119,13 @@ fn part2(entries: []const Entry) !u32 {
                     orig_lines |= @as(u7, 1) << @truncate(u3, i);
                 }
             }
-            result += (for (number_lines) |lines, number| {
+            sum += (for (number_lines) |lines, number| {
                 if (orig_lines == lines) {
                     break @truncate(u32, number);
                 }
             } else unreachable) * multiplier;
             multiplier /= 10;
         }
-        sum += result;
     }
     return sum;
 }

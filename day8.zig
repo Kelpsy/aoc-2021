@@ -18,8 +18,7 @@ fn convertLinesToMask(lines: []const u8) u7 {
 fn parseInput(allocator: *Allocator, reader: std.fs.File.Reader) !ArrayList(Entry) {
     var result = ArrayList(Entry).init(allocator);
     var entry_buffer = ArrayList(u8).init(allocator);
-    var finished = false;
-    while (!finished) {
+    while (true) {
         reader.readUntilDelimiterArrayList(&entry_buffer, '\n', std.math.inf_u64) catch |e| switch (e) {
             error.EndOfStream => break,
             else => return e,

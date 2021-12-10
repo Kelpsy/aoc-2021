@@ -11,8 +11,7 @@ fn parseInput(allocator: *Allocator, reader: std.fs.File.Reader) !Input {
     var entries = ArrayList(u8).init(allocator);
     var size = [2]usize{ 0, 0 };
     var line_buffer = ArrayList(u8).init(allocator);
-    var finished = false;
-    while (!finished) {
+    while (true) {
         reader.readUntilDelimiterArrayList(&line_buffer, '\n', std.math.inf_u64) catch |e| switch (e) {
             error.EndOfStream => break,
             else => return e,

@@ -148,9 +148,7 @@ fn part2(packet: *const Packet) u64 {
             }
             return result;
         },
-        4 => {
-            return packet.contents.value;
-        },
+        4 => return packet.contents.value,
         5 => {
             const values = [2]u64{
                 part2(&packet.contents.packets.items[0]),
